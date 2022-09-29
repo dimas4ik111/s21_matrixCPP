@@ -2,7 +2,8 @@
 #define __S21MATRIX_H__
 
 #define LLL std::endl
-#define PRINT std::cout <<  
+#define PRINT std::cout <<
+#define DEBUG PRINT "DEBUGER" << LLL;
 
 #include <cmath>
 #include <iostream>
@@ -25,14 +26,20 @@ public:
     double get_val_matrix(int i, int j);
 
     bool EqMatrix(const S21Matrix& other);
-    // void SumMatrix(const S21Matrix& other);
-    // void SubMatrix(const S21Matrix& other);
-    // void MulNumber(const double num);
-    // void MulMatrix(const S21Matrix& other);
-    // S21Matrix Transpose();
-    // S21Matrix CalcComplements();
-    // double Determinant();
-    // S21Matrix InverseMatrix();
+    void SumMatrix(const S21Matrix& other);
+    void SubMatrix(const S21Matrix& other);
+    void MulNumber(const double num);
+    void MulMatrix(const S21Matrix& other);
+    S21Matrix Transpose();
+    S21Matrix CalcComplements();
+    double Determinant();
+    S21Matrix InverseMatrix();
+
+    S21Matrix help_calculator(const S21Matrix& a);
+    double determ(double **m, int size);
+    void cofactor_matrix(double **src, double **dst, int jump_r, int jump_col, int size);
+
+    double &operator()(int row, int col);
 };
 
 #endif
