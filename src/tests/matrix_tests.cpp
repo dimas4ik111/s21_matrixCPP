@@ -1,5 +1,8 @@
-#include "../s21_matrix.h"
+#include "../lib/s21_matrix.h"
 #include <gtest/gtest.h>
+
+// #define LLL std::endl
+// #define PRINT std::cout <<
 
 TEST(whatTest, test1) {
     EXPECT_EQ(2, 2);
