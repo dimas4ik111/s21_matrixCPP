@@ -13,7 +13,7 @@ s21_matrix_oop.a: $(OBJ)
 	ar rcs s21_matrix_oop.a $(OBJ)
 
 test: s21_matrix_oop.a
-	cd tests; $(CC) $(CFLAGS) matrix_tests.cpp ../s21_matrix_oop.a -o testerFile -lgtest; ./testerFile
+	cd tests; $(CC) $(CFLAGS) matrix_tests.cc ../s21_matrix_oop.a -o testerFile -lgtest; ./testerFile
 
 clean:
 	$(RM) tests/testerFile

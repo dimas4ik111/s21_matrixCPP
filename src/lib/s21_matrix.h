@@ -18,6 +18,8 @@ public:
 
   int get_row();
   int get_col();
+  void set_row(int new_row);
+  void set_col(int new_col);
   void set_val_matrix(int i, int j, double num);
   double get_val_matrix(int i, int j);
 
@@ -37,14 +39,22 @@ public:
                        int size);
 
   double &operator()(int row, int col);
+
   bool operator==(const S21Matrix &other);
+  
+  S21Matrix &operator=(S21Matrix &&other);
   S21Matrix &operator=(const S21Matrix &other);
+
   S21Matrix &operator+=(const S21Matrix &other);
   S21Matrix operator+(const S21Matrix &other);
+
   S21Matrix &operator-=(const S21Matrix &other);
   S21Matrix operator-(const S21Matrix &other);
+
   S21Matrix &operator*=(const S21Matrix &other);
+  S21Matrix &operator*=(double num);
   S21Matrix operator*(const S21Matrix &other);
+  S21Matrix operator*(double num);
 };
 
 #endif
