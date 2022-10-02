@@ -1,12 +1,10 @@
-#include "s21_matrix.h"
+#include "s21_matrix_oop.h"
 
-S21Matrix::S21Matrix() {
-  cols_ = 2;
-  rows_ = 2;
-  matrix_ = new double*[rows_];
+S21Matrix::S21Matrix(): cols_(2), rows_(2) {
+    matrix_ = new double*[rows_]{};
   for (int i = 0; i < rows_; i++) {
-    matrix_[i] = new double[cols_];
-  } 
+    matrix_[i] = new double[cols_]{};
+  }
 }
 
 S21Matrix::~S21Matrix() {
@@ -16,40 +14,27 @@ S21Matrix::~S21Matrix() {
   delete[] matrix_;
 }
 
-S21Matrix::S21Matrix(int rows, int cols) {
+S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
   if (rows < 1 || cols < 1) {
     throw "rows or cols < 1";
   }
-  rows_ = rows;
-  cols_ = cols;
-  matrix_ = new double *[rows];
+  matrix_ = new double *[rows]{};
   for (int i = 0; i < rows; i++) {
-    matrix_[i] = new double[cols];
-  }
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      this->matrix_[i][j] = 0;
-    }
+    matrix_[i] = new double[cols]{0};
   }
 }
 
-S21Matrix::S21Matrix(const S21Matrix &other) {
-  rows_ = other.rows_;
-  cols_ = other.cols_;
-  matrix_ = new double *[rows_];
+S21Matrix::S21Matrix(const S21Matrix &other) : rows_(other.rows_), cols_(other.cols_) {
+  matrix_ = new double *[rows_]{};
   for (int i = 0; i < rows_; i++) {
-    matrix_[i] = new double [cols_];
+    matrix_[i] = new double [cols_]{};
     for (int j = 0; j < cols_; j++) {
-      // other.matrix_[i][j] = matrix_[i][j];
       matrix_[i][j] = other.matrix_[i][j];
     }
   }
 }
 
-S21Matrix::S21Matrix(S21Matrix &&other) {
-  cols_ = other.cols_;
-  rows_ = other.rows_;
-  matrix_ = other.matrix_;
+S21Matrix::S21Matrix(S21Matrix &&other) : cols_(other.cols_), rows_(other.rows_), matrix_(other.matrix_) {
   other.rows_ = 0;
   other.cols_ = 0;
   other.matrix_ = nullptr;
@@ -69,8 +54,8 @@ void S21Matrix::set_val_matrix(int i, int j, double num) {
 double S21Matrix::get_val_matrix(int i, int j) { return matrix_[i][j]; }
 
 bool S21Matrix::EqMatrix(const S21Matrix &other) {
-  if (rows_ != other.rows_ && cols_ != other.cols_) {
-    return false;
+  if (rows_ != other.rows_ || cols_ != other.cols_) {
+    throw std::logic_error("cols1 != cols2 || rows1 != rows2");
   }
   int result = true;
   for (int i = 0; i < rows_; i++) {
@@ -229,11 +214,11 @@ double S21Matrix::Determinant() {
 
 S21Matrix S21Matrix::InverseMatrix() {
   if (this->cols_ != this->rows_) {
-    throw "rows != cols";
+    throw std::out_of_range("rows != cols");
   }
 
   double det = this->Determinant();
-  if (det <= 1e-7) {
+  if (std::fabs(det) < 1e-06) {
     throw "Error determinant";
   }
 
@@ -243,7 +228,7 @@ S21Matrix S21Matrix::InverseMatrix() {
   return help2;
 }
 
-double &S21Matrix::operator()(int row, int col) {
+double &S21Matrix::operator()(int row, int col) { 
   if (row >= rows_ || col >= cols_)
     throw std::out_of_range("Incorrect input, index is out of range");
 
@@ -434,3 +419,10 @@ void S21Matrix::set_col(int new_col) {
   }
   this->cols_ = new_col;
 }
+
+S21Matrix operator*(double num, const S21Matrix &other) {
+  S21Matrix result(other);
+  result.MulNumber( num);
+  return result;
+}
+
