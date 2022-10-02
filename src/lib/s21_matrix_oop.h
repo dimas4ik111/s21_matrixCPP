@@ -16,6 +16,10 @@ public:
   S21Matrix(S21Matrix &&other);
   ~S21Matrix();
 
+  void create_matrix(S21Matrix &m);
+  void copy_cicle(S21Matrix &m, const S21Matrix &other);
+  void free_matrix(S21Matrix &m);
+
   int get_row();
   int get_col();
   void set_row(int new_row);

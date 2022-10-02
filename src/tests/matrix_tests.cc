@@ -19,6 +19,7 @@ TEST(set_col, t1) {
     m.set_col(3);
     m(1, 2) = 999.999;
     EXPECT_EQ(m.get_col(), 3);
+    EXPECT_EQ(m.get_col(), 3);
     EXPECT_DOUBLE_EQ(m(1, 1), 123.456);
     EXPECT_DOUBLE_EQ(m(1, 2), 999.999);
 }
@@ -42,9 +43,10 @@ TEST(constructors, t1) {
     m2(1, 1) = 123.456;
     EXPECT_EQ(m2.get_col(), 2);
     EXPECT_EQ(m2.get_row(), 2);
+    EXPECT_DOUBLE_EQ(m2(1, 1), 123.456);
 
     S21Matrix m3(m2);
-    EXPECT_EQ(m2 == m3, true);
+    EXPECT_EQ(m2.EqMatrix(m3), true);
 
     S21Matrix m4(std::move(m3));
     EXPECT_EQ(m3.get_col(), 0);

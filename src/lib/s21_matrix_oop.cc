@@ -1,37 +1,22 @@
 #include "s21_matrix_oop.h"
 
 S21Matrix::S21Matrix(): cols_(2), rows_(2) {
-    matrix_ = new double*[rows_]{};
-  for (int i = 0; i < rows_; i++) {
-    matrix_[i] = new double[cols_]{};
-  }
+  create_matrix(*this);
 }
 
 S21Matrix::~S21Matrix() {
-  for (int i = 0; i < rows_; i++) {
-    delete[] matrix_[i];
-  }
-  delete[] matrix_;
+  free_matrix(*this);
 }
 
 S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
   if (rows < 1 || cols < 1) {
     throw "rows or cols < 1";
   }
-  matrix_ = new double *[rows]{};
-  for (int i = 0; i < rows; i++) {
-    matrix_[i] = new double[cols]{0};
-  }
+  create_matrix(*this);
 }
 
 S21Matrix::S21Matrix(const S21Matrix &other) : rows_(other.rows_), cols_(other.cols_) {
-  matrix_ = new double *[rows_]{};
-  for (int i = 0; i < rows_; i++) {
-    matrix_[i] = new double [cols_]{};
-    for (int j = 0; j < cols_; j++) {
-      matrix_[i][j] = other.matrix_[i][j];
-    }
-  }
+  copy_cicle(*this, other);
 }
 
 S21Matrix::S21Matrix(S21Matrix &&other) : cols_(other.cols_), rows_(other.rows_), matrix_(other.matrix_) {
@@ -40,13 +25,36 @@ S21Matrix::S21Matrix(S21Matrix &&other) : cols_(other.cols_), rows_(other.rows_)
   other.matrix_ = nullptr;
 }
 
+void S21Matrix::create_matrix(S21Matrix& m) {
+  m.matrix_ = new double*[rows_]{};
+  for (int i = 0; i < rows_; i++) {
+    m.matrix_[i] = new double[cols_]{};
+  }
+}
+
+void S21Matrix::free_matrix(S21Matrix &m) {
+  for (int i = 0; i < m.rows_; i++) {
+    delete[] m.matrix_[i];
+  }
+  delete[] m.matrix_;
+}
+
+void S21Matrix::copy_cicle(S21Matrix &m, const S21Matrix &other) {
+  create_matrix(m);
+  for (int i = 0; i < rows_; i++) {
+    for (int j = 0; j < cols_; j++) {
+      m.matrix_[i][j] = other.matrix_[i][j];
+    }
+  }
+}
+
 int S21Matrix::get_row() { return rows_; }
 
 int S21Matrix::get_col() { return cols_; }
 
 void S21Matrix::set_val_matrix(int i, int j, double num) {
   if (i < 0 || j < 0 || i > rows_ || j > cols_) {
-    return;
+    throw std::out_of_range("rows || cols < 1");
   }
   matrix_[i][j] = num;
 }
@@ -74,7 +82,7 @@ bool S21Matrix::EqMatrix(const S21Matrix &other) {
 
 void S21Matrix::SumMatrix(const S21Matrix &other) {
   if (rows_ != other.rows_ && cols_ != other.cols_) {
-    throw "Can't sum matrix with defferents row and col";
+    throw std::logic_error("Can't sum matrix with defferents row and col");
   }
 
   for (int i = 0; i < rows_; i++) {
@@ -86,7 +94,7 @@ void S21Matrix::SumMatrix(const S21Matrix &other) {
 
 void S21Matrix::SubMatrix(const S21Matrix &other) {
   if (rows_ != other.rows_ && cols_ != other.cols_) {
-    throw "Can't sub matrix with defferents row and col";
+    throw std::logic_error("Can't sub matrix with defferents row and col");
   }
 
   for (int i = 0; i < rows_; i++) {
@@ -106,7 +114,7 @@ void S21Matrix::MulNumber(const double num) {
 
 void S21Matrix::MulMatrix(const S21Matrix &other) {
   if (this->cols_ != other.rows_) {
-    throw "Can't mul this matrixes";
+    throw std::logic_error("Can't mul this matrixes");
   }
 
   S21Matrix result(this->rows_, other.cols_);
@@ -192,14 +200,14 @@ S21Matrix S21Matrix::help_calculator(const S21Matrix &a) {
 
 S21Matrix S21Matrix::CalcComplements() {
   if (this->rows_ != this->cols_) {
-    throw "rows != cols";
+    throw std::logic_error("rows != cols");
   }
   return help_calculator(*this);
 }
 
 double S21Matrix::Determinant() {
   if (this->rows_ <= 0 || this->cols_ <= 0 || this->rows_ != this->cols_) {
-    throw "Error size matrix";
+    throw std::logic_error("Error size matrix");
   }
 
   double res = 0;
@@ -214,12 +222,12 @@ double S21Matrix::Determinant() {
 
 S21Matrix S21Matrix::InverseMatrix() {
   if (this->cols_ != this->rows_) {
-    throw std::out_of_range("rows != cols");
+    throw std::logic_error("rows != cols");
   }
 
   double det = this->Determinant();
   if (std::fabs(det) < 1e-06) {
-    throw "Error determinant";
+    throw std::logic_error("Error determinant");
   }
 
   S21Matrix help1 = this->CalcComplements();
@@ -230,7 +238,7 @@ S21Matrix S21Matrix::InverseMatrix() {
 
 double &S21Matrix::operator()(int row, int col) { 
   if (row >= rows_ || col >= cols_)
-    throw std::out_of_range("Incorrect input, index is out of range");
+    throw std::logic_error("Incorrect input, index is out of range");
 
   return matrix_[row][col];
 }
@@ -240,13 +248,9 @@ bool S21Matrix::operator==(const S21Matrix &other) {
 }
 
 S21Matrix &S21Matrix::operator=(S21Matrix &&other) {
-  if (this == &other)
-    return *this;
+  if (this == &other) return *this;
 
-  for (int i = 0; i < this->rows_; i++) {
-    delete[] this->matrix_[i];
-  }
-  delete[] this->matrix_;
+  free_matrix(*this);
 
   this->rows_ = other.rows_;
   this->cols_ = other.cols_;
@@ -260,31 +264,20 @@ S21Matrix &S21Matrix::operator=(S21Matrix &&other) {
 }
 
 S21Matrix &S21Matrix::operator=(const S21Matrix &other) {
-  if (this == &other) {
-    return *this;
-  } 
+  if (this == &other) return *this;
 
-  for (int i = 0; i < rows_; i++) {
-    delete[] matrix_[i];
-  }
-  delete[] matrix_;
+  free_matrix(*this);
 
   rows_ = other.rows_;
   cols_ = other.cols_;
-  matrix_ = new double *[rows_];
-  for (int i = 0; i < rows_; i++) {
-    matrix_[i] = new double [cols_];
-    for (int j = 0; j < cols_; j++) {
-      matrix_[i][j] = other.matrix_[i][j];
-    }
-  }
+  copy_cicle(*this, other);
 
   return *this;
 }
 
 S21Matrix &S21Matrix::operator+=(const S21Matrix &other) {
   if (this->rows_ != other.rows_ || this->cols_ != other.cols_) {
-    throw "cols != rows";
+    throw std::logic_error("cols != rows");
   }
 
   this->SumMatrix(other);
@@ -294,7 +287,7 @@ S21Matrix &S21Matrix::operator+=(const S21Matrix &other) {
 
 S21Matrix S21Matrix::operator+(const S21Matrix &other) {
   if (this->rows_ != other.rows_ || this->cols_ != other.cols_) {
-    throw "cols != rows";
+    throw std::logic_error("cols != rows");
   }
 
   S21Matrix result(*this);
@@ -306,7 +299,7 @@ S21Matrix S21Matrix::operator+(const S21Matrix &other) {
 
 S21Matrix &S21Matrix::operator-=(const S21Matrix &other) {
   if (this->rows_ != other.rows_ || this->cols_ != other.cols_) {
-    throw "cols != rows";
+    throw std::logic_error("cols != rows");
   }
 
   this->SubMatrix(other);
@@ -316,7 +309,7 @@ S21Matrix &S21Matrix::operator-=(const S21Matrix &other) {
 
 S21Matrix S21Matrix::operator-(const S21Matrix &other) {
   if (this->rows_ != other.rows_ || this->cols_ != other.cols_) {
-    throw "cols != rows";
+    throw std::logic_error("cols != rows");
   }
 
   S21Matrix result(*this);
@@ -328,7 +321,7 @@ S21Matrix S21Matrix::operator-(const S21Matrix &other) {
 
 S21Matrix &S21Matrix::operator*=(const S21Matrix &other) {
   if (this->cols_ != other.rows_) {
-    throw "cols first matrix != rows second matrix";
+    throw std::logic_error("cols first matrix != rows second matrix");
   }
 
   this->MulMatrix(other);
@@ -344,7 +337,7 @@ S21Matrix &S21Matrix::operator*=(double num) {
 
 S21Matrix S21Matrix::operator*(const S21Matrix &other) {
   if (this->cols_ != other.rows_) {
-    throw "cols first matrix != rows second matrix";
+    throw std::logic_error("cols first matrix != rows second matrix");
   }
 
   S21Matrix result(*this);
@@ -364,7 +357,7 @@ S21Matrix S21Matrix::operator*(double num) {
 
 void S21Matrix::set_row(int new_row) {
   if (new_row < 1) {
-    throw "row can't be smaller that 1";
+    throw std::logic_error("row can't be smaller that 1");
   } else if (new_row == this->rows_) {
     return;
   }
@@ -395,28 +388,21 @@ void S21Matrix::set_row(int new_row) {
 
 void S21Matrix::set_col(int new_col) {
   if (new_col < 1) {
-    throw std::out_of_range("col can't be smaller that 1");
+    throw std::logic_error("col can't be smaller that 1");
   } else if (new_col == this->cols_) {
     return;
   }
 
-  for (int i = 0; i < this->rows_; i++) {
-    if (new_col > this->cols_) {
-      double *tmp = new double[new_col];
-      for (int j = 0; j < this->cols_; j++) {
-        tmp[j] = this->matrix_[i][j];
-      }
-      delete[] matrix_[i];
-      this->matrix_[i] = tmp;
-    } else if (new_col < this->cols_) {
-      double *tmp = new double[new_col];
-      for (int j = 0; j < new_col; j++) {
-        tmp[j] = this->matrix_[i][j];
-      }
-      delete[] this->matrix_[i];
-      this->matrix_[i] = tmp;
+  int val = (new_col < cols_ ? new_col : cols_);
+  for (int i = 0; i < rows_; i++) {
+    double *tmp = new double[new_col]{};
+    for (int j = 0; j < val; j++) {
+      tmp[j] = this->matrix_[i][j];
     }
+    delete[] this->matrix_[i];
+    this->matrix_[i] = tmp;
   }
+
   this->cols_ = new_col;
 }
 
