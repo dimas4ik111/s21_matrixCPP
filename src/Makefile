@@ -5,9 +5,7 @@ OBJ = $(SRC:.cc=.o)
 HEADER = lib/s21_matrix_oop.h
 RM = rm -rf
 
-all:
-	s21_matrix_oop.a
-	test
+all: s21_matrix_oop.a test
 
 s21_matrix_oop.a: $(OBJ)
 	ar rcs s21_matrix_oop.a $(OBJ)

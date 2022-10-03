@@ -1,5 +1,6 @@
-#include "../lib/s21_matrix_oop.h"
 #include <gtest/gtest.h>
+
+#include "../lib/s21_matrix_oop.h"
 
 #define DEBUGER std::cout << std::endl << "DEBUG" << std::endl << std::endl;
 #define PR std::cout <<
@@ -183,8 +184,7 @@ TEST(func8, det) {
   S21Matrix m(5, 5);
 
   for (uint32_t i = 0; i < 5; i++)
-    for (uint32_t j = 0; j < 5; j++)
-      m(i, j) = j;
+    for (uint32_t j = 0; j < 5; j++) m(i, j) = j;
 
   ASSERT_NEAR(0, m.Determinant(), 1e-06);
 }
@@ -427,13 +427,11 @@ TEST(operator, mul) {
   S21Matrix m3(3, 1);
   ASSERT_ANY_THROW(m3.MulMatrix(m2));
 
-  for (int i = 0; i < m3.get_row(); ++i)
-    m3(i, 0) = 2;
+  for (int i = 0; i < m3.get_row(); ++i) m3(i, 0) = 2;
   m2.MulMatrix(m3);
   EXPECT_EQ(1, m2.get_col());
   EXPECT_EQ(3, m2.get_row());
-  for (int i = 0; i < m2.get_row(); ++i)
-    EXPECT_DOUBLE_EQ(12 + 6 * i, m2(i, 0));
+  for (int i = 0; i < m2.get_row(); ++i) EXPECT_DOUBLE_EQ(12 + 6 * i, m2(i, 0));
 }
 
 int main() {

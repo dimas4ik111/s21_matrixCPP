@@ -1,8 +1,8 @@
 #include "s21_matrix_oop.h"
 
-S21Matrix::S21Matrix() { 
+S21Matrix::S21Matrix() {
   cols_ = 2;
-  rows_ = 2;  
+  rows_ = 2;
   create_matrix(*this);
 }
 
@@ -29,7 +29,7 @@ S21Matrix::S21Matrix(S21Matrix &&other) : matrix_(other.matrix_) {
 }
 
 void S21Matrix::create_matrix(S21Matrix &m) {
-  m.matrix_ = new double *[rows_] ();
+  m.matrix_ = new double *[rows_]();
   for (int i = 0; i < rows_; i++) {
     m.matrix_[i] = new double[cols_]();
   }
@@ -146,8 +146,7 @@ void S21Matrix::cofactor_matrix(double **src, double **dst, int jump_r,
 }
 
 double S21Matrix::determ(double **m, int size) {
-  if (size == 1)
-    return m[0][0];
+  if (size == 1) return m[0][0];
 
   double res = 0;
 
@@ -237,8 +236,7 @@ bool S21Matrix::operator==(const S21Matrix &other) {
 }
 
 S21Matrix &S21Matrix::operator=(S21Matrix &&other) {
-  if (this == &other)
-    return *this;
+  if (this == &other) return *this;
 
   free_matrix(*this);
 
@@ -254,8 +252,7 @@ S21Matrix &S21Matrix::operator=(S21Matrix &&other) {
 }
 
 S21Matrix &S21Matrix::operator=(const S21Matrix &other) {
-  if (this == &other)
-    return *this;
+  if (this == &other) return *this;
 
   free_matrix(*this);
 
@@ -331,7 +328,7 @@ void S21Matrix::set_row(int new_row) {
 
   int val = (new_row > rows_ ? rows_ : new_row);
 
-  double **tmp = new double *[new_row] ();
+  double **tmp = new double *[new_row]();
   for (int i = 0; i < new_row; i++) {
     tmp[i] = new double[cols_]();
   }

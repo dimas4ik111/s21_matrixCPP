@@ -5,8 +5,7 @@
 #include <iostream>
 
 class S21Matrix {
-
-public:
+ public:
   S21Matrix();
   S21Matrix(int rows, int cols);
   S21Matrix(const S21Matrix &other);
@@ -47,7 +46,7 @@ public:
   S21Matrix operator*(double num);
   friend S21Matrix operator*(double num, const S21Matrix &other);
 
-  private:
+ private:
   int rows_, cols_;
   double **matrix_;
 
@@ -58,7 +57,6 @@ public:
   void create_matrix(S21Matrix &m);
   void copy_cicle(S21Matrix &m, const S21Matrix &other);
   void free_matrix(S21Matrix &m);
-
 };
 
 #endif
