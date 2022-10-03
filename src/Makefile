@@ -1,5 +1,5 @@
 CC = g++
-# CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra
 SRC = lib/s21_matrix_oop.cc \
 		lib/s21_matrix_oop.h
 OBJ = $(SRC:.cc=.o)

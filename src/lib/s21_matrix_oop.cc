@@ -1,12 +1,8 @@
 #include "s21_matrix_oop.h"
 
-S21Matrix::S21Matrix(): cols_(2), rows_(2) {
-  create_matrix(*this);
-}
+S21Matrix::S21Matrix() : cols_(2), rows_(2) { create_matrix(*this); }
 
-S21Matrix::~S21Matrix() {
-  free_matrix(*this);
-}
+S21Matrix::~S21Matrix() { free_matrix(*this); }
 
 S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
   if (rows < 1 || cols < 1) {
@@ -15,18 +11,20 @@ S21Matrix::S21Matrix(int rows, int cols) : rows_(rows), cols_(cols) {
   create_matrix(*this);
 }
 
-S21Matrix::S21Matrix(const S21Matrix &other) : rows_(other.rows_), cols_(other.cols_) {
+S21Matrix::S21Matrix(const S21Matrix &other)
+    : rows_(other.rows_), cols_(other.cols_) {
   copy_cicle(*this, other);
 }
 
-S21Matrix::S21Matrix(S21Matrix &&other) : cols_(other.cols_), rows_(other.rows_), matrix_(other.matrix_) {
+S21Matrix::S21Matrix(S21Matrix &&other)
+    : cols_(other.cols_), rows_(other.rows_), matrix_(other.matrix_) {
   other.rows_ = 0;
   other.cols_ = 0;
   other.matrix_ = nullptr;
 }
 
-void S21Matrix::create_matrix(S21Matrix& m) {
-  m.matrix_ = new double*[rows_]{};
+void S21Matrix::create_matrix(S21Matrix &m) {
+  m.matrix_ = new double *[rows_] {};
   for (int i = 0; i < rows_; i++) {
     m.matrix_[i] = new double[cols_]{};
   }
@@ -119,10 +117,10 @@ void S21Matrix::MulMatrix(const S21Matrix &other) {
 
   S21Matrix result(this->rows_, other.cols_);
 
-  for (int i = 0; i < this->rows_; i++) {
+  for (int i = 0; i < rows_; i++) {
     for (int j = 0; j < other.cols_; j++) {
       for (int n = 0; n < this->cols_; n++) {
-        result.matrix_[i][j] = this->matrix_[i][n] * other.matrix_[n][j];
+        result.matrix_[i][j] += matrix_[i][n] * other.matrix_[n][j];
       }
     }
   }
@@ -236,7 +234,7 @@ S21Matrix S21Matrix::InverseMatrix() {
   return help2;
 }
 
-double &S21Matrix::operator()(int row, int col) { 
+double &S21Matrix::operator()(int row, int col) {
   if (row >= rows_ || col >= cols_)
     throw std::logic_error("Incorrect input, index is out of range");
 
@@ -248,7 +246,8 @@ bool S21Matrix::operator==(const S21Matrix &other) {
 }
 
 S21Matrix &S21Matrix::operator=(S21Matrix &&other) {
-  if (this == &other) return *this;
+  if (this == &other)
+    return *this;
 
   free_matrix(*this);
 
@@ -264,7 +263,8 @@ S21Matrix &S21Matrix::operator=(S21Matrix &&other) {
 }
 
 S21Matrix &S21Matrix::operator=(const S21Matrix &other) {
-  if (this == &other) return *this;
+  if (this == &other)
+    return *this;
 
   free_matrix(*this);
 
@@ -362,27 +362,23 @@ void S21Matrix::set_row(int new_row) {
     return;
   }
 
-  if (new_row > this->rows_) {
-    double **tmp;
-    tmp = new double *[new_row];
-    for (int i = 0; i < new_row; i++) {
-      tmp[i] = new double[this->cols_];
-    }
+  int val = (new_row > this->rows_ ? this->rows_ : new_row);
 
-    for (int i = 0; i < this->rows_; i++) {
-      for (int j = 0; j < this->cols_; j++) {
-        tmp[i][j] = this->matrix_[i][j];
-      }
-    }
+  double **tmp = new double *[new_row] {};
+  for (int i = 0; i < new_row; i++) {
+    tmp[i] = new double[cols_]{};
+  }
 
-    this->~S21Matrix();
-    this->matrix_ = tmp;
-  } else if (new_row < this->rows_) {
-    for (int i = new_row; i < this->rows_; i++) {
-      delete[] this->matrix_[i];
+  for (int i = 0; i < val; i++) {
+    for (int j = 0; j < cols_; j++) {
+      tmp[i][j] = matrix_[i][j];
     }
   }
-  
+
+  free_matrix(*this);
+
+  this->matrix_ = tmp;
+
   this->rows_ = new_row;
 }
 
@@ -408,7 +404,6 @@ void S21Matrix::set_col(int new_col) {
 
 S21Matrix operator*(double num, const S21Matrix &other) {
   S21Matrix result(other);
-  result.MulNumber( num);
+  result.MulNumber(num);
   return result;
 }
-
