@@ -5,9 +5,6 @@
 #include <iostream>
 
 class S21Matrix {
-private:
-  int rows_, cols_;
-  double **matrix_;
 
 public:
   S21Matrix();
@@ -16,16 +13,10 @@ public:
   S21Matrix(S21Matrix &&other);
   ~S21Matrix();
 
-  void create_matrix(S21Matrix &m);
-  void copy_cicle(S21Matrix &m, const S21Matrix &other);
-  void free_matrix(S21Matrix &m);
-
   int get_row();
   int get_col();
   void set_row(int new_row);
   void set_col(int new_col);
-  void set_val_matrix(int i, int j, double num);
-  double get_val_matrix(int i, int j);
 
   bool EqMatrix(const S21Matrix &other);
   void SumMatrix(const S21Matrix &other);
@@ -36,11 +27,6 @@ public:
   S21Matrix CalcComplements();
   double Determinant();
   S21Matrix InverseMatrix();
-
-  S21Matrix help_calculator(const S21Matrix &a);
-  double determ(double **m, int size);
-  void cofactor_matrix(double **src, double **dst, int jump_r, int jump_col,
-                       int size);
 
   double &operator()(int row, int col);
 
@@ -60,6 +46,19 @@ public:
   S21Matrix operator*(const S21Matrix &other);
   S21Matrix operator*(double num);
   friend S21Matrix operator*(double num, const S21Matrix &other);
+
+  private:
+  int rows_, cols_;
+  double **matrix_;
+
+  S21Matrix help_calculator(const S21Matrix &a);
+  double determ(double **m, int size);
+  void cofactor_matrix(double **src, double **dst, int jump_r, int jump_col,
+                       int size);
+  void create_matrix(S21Matrix &m);
+  void copy_cicle(S21Matrix &m, const S21Matrix &other);
+  void free_matrix(S21Matrix &m);
+
 };
 
 #endif
